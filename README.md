@@ -1,11 +1,19 @@
+# FORK of Docker NFS, AWS EFS & Samba/CIFS Volume Plugin
+
+Slight adaptation of the wonderful ContainX/docker-volume-netshare project.
+
+- Escaping of paths in CIFS mode
+- Adding retries to unmounting in CIFS mode to try to avoid accumulating loose shares due to unmounting errors 
+
+Migration to go 1.13.9 and go mod way of managing dependencies
+
+
+
 # Docker NFS, AWS EFS & Samba/CIFS Volume Plugin
 
-[![Build Status](https://travis-ci.org/ContainX/docker-volume-netshare.svg)](https://travis-ci.org/ContainX/docker-volume-netshare) [![release](http://github-release-version.herokuapp.com/github/ContainX/docker-volume-netshare/release.svg?style=flat)](https://github.com/ContainX/docker-volume-netshare/releases/latest)
 
 Mount NFS v3/4, AWS EFS or CIFS inside your docker containers.  This is a docker plugin which enables these volume types to be directly mounted within a container.
 
-### Documentation [http://netshare.containx.io](http://netshare.containx.io)
-### Chat/Slack [https://containx.slack.com](https://containx.slack.com)
 
 ## NFS Prerequisites on Linux
 
@@ -28,23 +36,7 @@ $ go get github.com/ContainX/docker-volume-netshare
 $ go build
 ```
 
-#### From Binaries
 
-Binaries are available through GitHub releases.  You can download the appropriate binary, package and version from the [Releases](https://github.com/ContainX/docker-volume-netshare/releases) page
-
-#### On Ubuntu / Debian
-
-The method below will install the sysvinit and /etc/default options that can be overwritten during service start.
-
-1. Install the Package
-
-```
-  $ wget https://github.com/ContainX/docker-volume-netshare/releases/download/v0.36/docker-volume-netshare_0.36_amd64.deb
-  $ sudo dpkg -i docker-volume-netshare_0.36_amd64.deb
-```
-
-2. Modify the startup options in `/etc/default/docker-volume-netshare`
-3. Start the service `service docker-volume-netshare start`
 
 
 ## Usage
