@@ -5,4 +5,5 @@ FROM golang:1.13.9
 RUN mkdir /build
 RUN mkdir -p /go/src/github.com/nonopoubelle/docker-volume-netshare
 WORKDIR /go/src/github.com/nonopoubelle/docker-volume-netshare
+COPY script.sh .
 CMD ./script.sh
