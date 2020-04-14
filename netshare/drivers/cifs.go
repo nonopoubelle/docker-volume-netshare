@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-
+    "time"
 	"github.com/dickeyxxx/netrc"
 	"github.com/docker/go-plugins-helpers/volume"
+	"gopkg.in/alessio/shellescape.v1"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -95,7 +96,7 @@ func (c CifsDriver) Mount(r *volume.MountRequest) (*volume.MountResponse, error)
 	if c.mountm.HasMount(r.Name) && c.mountm.Count(r.Name) > 0 {
 		log.Infof("Using existing CIFS volume mount: %s", hostdir)
 		c.mountm.Increment(r.Name)
-		if err := run(fmt.Sprintf("mountpoint -q %s", hostdir)); err != nil {
+		if err := run(fmt.Sprintf("mountpoint -q %s", shellescape.Quote(hostdir))); err != nil {
 			log.Infof("Existing CIFS volume not mounted, force remount.")
 		} else {
 			return &volume.MountResponse{Mountpoint: hostdir}, nil
@@ -142,8 +143,17 @@ func (c CifsDriver) Unmount(r *volume.UnmountRequest) error {
 
 	log.Infof("Unmounting volume %s from %s", source, hostdir)
 
-	if err := run(fmt.Sprintf("umount %s", hostdir)); err != nil {
-		return err
+	for i := 1; i < 11; i++ {
+		if err := run(fmt.Sprintf("umount %s", shellescape.Quote(hostdir))); err != nil {
+			if i == 10 {
+				log.Warnf("Unmount failed for %s after %d tries - giving up", r.Name, i)
+				return err
+			}
+			log.Infof("Unmount failed for %s - try %d - sleeping before next try", r.Name, i)
+			time.Sleep(time.Duration(i * 200) * time.Millisecond)
+		}else{
+			break
+		}
 	}
 
 	c.mountm.DeleteIfNotManaged(r.Name)
@@ -244,7 +254,7 @@ func (c CifsDriver) mountVolume(name, source, dest string, creds *CifsCreds) err
 
 	opts.WriteString("rw ")
 
-	opts.WriteString(fmt.Sprintf("%s %s", source, dest))
+	opts.WriteString(fmt.Sprintf("%s %s", shellescape.Quote(source), shellescape.Quote(dest)))
 	cmd := fmt.Sprintf("mount -t cifs -o %s", opts.String())
 	log.Debugf("Executing: %s\n", strings.Replace(cmd, "password='"+pass+"'", "password='****'", 1))
 	return run(cmd)
