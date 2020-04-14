@@ -302,7 +302,7 @@ func syncDockerState(driverName string) *drivers.MountManager {
 			continue
 		}
 		connections := activeConnections(vol.Name)
-		log.Infof("Recovered state: %s , %s , %s , %s , %d ", vol.Name, vol.Mountpoint, vol.Driver, vol.CreatedAt, connections)
+		log.Infof("Recovered state: %s , %s , %s , %d ", vol.Name, vol.Mountpoint, vol.Driver, connections)
 		mount.AddMount(vol.Name, vol.Mountpoint, connections)
 	}
 	return mount
