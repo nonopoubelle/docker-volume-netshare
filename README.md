@@ -7,6 +7,17 @@ Slight adaptation of the wonderful ContainX/docker-volume-netshare project.
 
 Migration to go 1.13.9 and go mod way of managing dependencies
 
+## How to compile
+
+```
+git clone https://github.com/nonopoubelle/docker-volume-netshare.git
+
+cd docker-volume-netshare
+
+docker build -t docker-volume-netshare .
+
+docker run --rm -it -v $PWD:/go/src/github.com/nonopoubelle/docker-volume-netshare docker-volume-netshare
+```
 
 
 # Docker NFS, AWS EFS & Samba/CIFS Volume Plugin
