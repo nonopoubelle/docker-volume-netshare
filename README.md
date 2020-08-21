@@ -3,7 +3,8 @@
 Slight adaptation of the wonderful ContainX/docker-volume-netshare project.
 
 - Escaping of paths in CIFS mode
-- Adding retries to unmounting in CIFS mode to try to avoid accumulating loose shares due to unmounting errors 
+- Adding retries to unmounting in CIFS mode to try to avoid accumulating loose shares due to unmounting errors
+- Adding possibility to put cifs options for each machine separately in the netrc file (ex: to deal with old servers    `options ver=2.0`  )
 
 Migration to go 1.13.9 and go mod way of managing dependencies
 
