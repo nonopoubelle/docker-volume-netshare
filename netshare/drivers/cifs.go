@@ -20,6 +20,7 @@ const (
 	SecurityOpt = "security"
 	FileModeOpt = "fileMode"
 	DirModeOpt  = "dirMode"
+	OptionsOpt = "options"
 	CifsOpts    = "cifsopts"
 )
 
@@ -39,6 +40,7 @@ type CifsCreds struct {
 	security string
 	fileMode string
 	dirMode  string
+	options  string
 }
 
 func (creds *CifsCreds) String() string {
@@ -198,6 +200,7 @@ func (c CifsDriver) mountVolume(name, source, dest string, creds *CifsCreds) err
 	var security = creds.security
 	var fileMode = creds.fileMode
 	var dirMode = creds.dirMode
+	var optionsNetrc = creds.options
 
 	options := merge(c.mountm.GetOptions(name), c.cifsopts)
 	if val, ok := options[CifsOpts]; ok {
@@ -223,6 +226,9 @@ func (c CifsDriver) mountVolume(name, source, dest string, creds *CifsCreds) err
 		}
 		if v, found := mopts[DirModeOpt]; found {
 			dirMode = v
+		}
+		if v, found := mopts[OptionsOpt]; found {
+			optionsNetrc = v
 		}
 	}
 
@@ -252,6 +258,10 @@ func (c CifsDriver) mountVolume(name, source, dest string, creds *CifsCreds) err
 		opts.WriteString(fmt.Sprintf("dir_mode=%s,", dirMode))
 	}
 
+	if optionsNetrc != "" {
+		opts.WriteString(fmt.Sprintf("%s,", optionsNetrc))
+	}
+
 	opts.WriteString("rw ")
 
 	opts.WriteString(fmt.Sprintf("%s %s", shellescape.Quote(source), shellescape.Quote(dest)))
@@ -272,6 +282,7 @@ func (c CifsDriver) getCreds(host string) *CifsCreds {
 				security: m.Get("security"),
 				fileMode: m.Get("fileMode"),
 				dirMode:  m.Get("dirMode"),
+				options:  m.Get("options"),
 			}
 		}
 	}
